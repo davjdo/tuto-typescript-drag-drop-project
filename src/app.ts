@@ -1,16 +1,12 @@
 // autobind decorator
-function autobind(
-  _: any,
-  _2: string,
-  descriptor: PropertyDescriptor
-) {
-  const originalMethod = descriptor.value // store the orginal method we originally defined
+function autobind(_: any, _2: string, descriptor: PropertyDescriptor) {
+  const originalMethod = descriptor.value; // store the orginal method we originally defined
   const adjDescriptor: PropertyDescriptor = {
     configurable: true,
     get() {
       const boundFn = originalMethod.bind(this);
       return boundFn;
-    }
+    },
   };
   return adjDescriptor;
 }
@@ -41,7 +37,7 @@ class ProjectInput {
       "#title"
     ) as HTMLInputElement;
     this.descriptionInputElement = this.element.querySelector(
-      "#decription"
+      "#description"
     ) as HTMLInputElement;
     this.peopleInputElement = this.element.querySelector(
       "#people"
@@ -51,10 +47,39 @@ class ProjectInput {
     this.attach();
   }
 
+  private gatherUserInput(): [string, string, number] | void {
+    const enteredTitle = this.titleInputElement.value;
+    const enteredDescription = this.descriptionInputElement.value;
+    const enteredPeople = this.peopleInputElement.value;
+
+    if (
+      enteredTitle.trim().length === 0 ||
+      enteredDescription.trim().length === 0 ||
+      enteredPeople.trim().length === 0
+    ) {
+      alert("Invalid Input, please try again");
+      return;
+    } else {
+      return [enteredTitle, enteredDescription, +enteredPeople];
+    }
+  }
+
+  private clearInputs () {
+    this.titleInputElement.value = ""
+    this.descriptionInputElement.value = ""
+    this.peopleInputElement.value = ""
+  }
+
   @autobind
   private submitHandler(event: Event) {
     event.preventDefault();
-    console.log(this.titleInputElement.value);
+    const userInput = this.gatherUserInput();
+    if (Array.isArray(userInput)) {
+      // check if userinput is an array (in js tupple type not exist)
+      const [title, desc, people] = userInput;
+      console.log(title, desc, people);
+      this.clearInputs();
+    }
   }
 
   private configure() {
