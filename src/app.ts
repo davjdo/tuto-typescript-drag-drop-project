@@ -1,3 +1,21 @@
+// autobind decorator
+function autobind(
+  _: any,
+  _2: string,
+  descriptor: PropertyDescriptor
+) {
+  const originalMethod = descriptor.value // store the orginal method we originally defined
+  const adjDescriptor: PropertyDescriptor = {
+    configurable: true,
+    get() {
+      const boundFn = originalMethod.bind(this);
+      return boundFn;
+    }
+  };
+  return adjDescriptor;
+}
+
+// ProjectInput Class
 class ProjectInput {
   templateElement: HTMLTemplateElement;
   hostElement: HTMLDivElement;
@@ -17,22 +35,30 @@ class ProjectInput {
       true
     );
     this.element = importedNode.firstElementChild as HTMLFormElement;
-    this.element.id = 'user-input';
+    this.element.id = "user-input";
 
-    this.titleInputElement = this.element.querySelector('#title') as HTMLInputElement;
-    this.descriptionInputElement = this.element.querySelector('#decription') as HTMLInputElement;
-    this.peopleInputElement = this.element.querySelector('#people') as HTMLInputElement;
+    this.titleInputElement = this.element.querySelector(
+      "#title"
+    ) as HTMLInputElement;
+    this.descriptionInputElement = this.element.querySelector(
+      "#decription"
+    ) as HTMLInputElement;
+    this.peopleInputElement = this.element.querySelector(
+      "#people"
+    ) as HTMLInputElement;
 
     this.configure();
     this.attach();
   }
 
-  private submitHandler (event: Event) {
+  @autobind
+  private submitHandler(event: Event) {
     event.preventDefault();
+    console.log(this.titleInputElement.value);
   }
 
-  private configure () {
-    this.element.addEventListener('submit', this.submitHandler.bind(this))
+  private configure() {
+    this.element.addEventListener("submit", this.submitHandler);
   }
 
   private attach() {
@@ -40,4 +66,4 @@ class ProjectInput {
   }
 }
 
-const prjInput = new ProjectInput()
+const prjInput = new ProjectInput();
